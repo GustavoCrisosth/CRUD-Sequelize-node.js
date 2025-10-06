@@ -4,6 +4,12 @@ class Cliente extends Model {
 
     static init(sequelize) {
         super.init({
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+
             nome: {
                 type: DataTypes.STRING,
                 validate: {
@@ -26,6 +32,22 @@ class Cliente extends Model {
                 }
             }
         }, { sequelize, modelName: 'cliente', tableName: 'clientes' })
+    }
+
+    static associate(models) {
+        this.hasMany(models.Compra, { foreignKey: "clienteId", as: "compras" });
+
+        this.belongsToMany(models.Produto, {
+            through: models.Compra,
+            foreignKey: "clienteId",
+            otherKey: "produtoId",
+            as: "produtos",
+        });
+
+        this.hasOne(models.Endereco, {
+            foreignKey: "clienteId",
+            as: "endereco"
+        });
     }
 
 }
